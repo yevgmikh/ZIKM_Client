@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace ZIKM_Client
+namespace ZIKM_Client.Views
 {
     public class MainWindow : Window
     {
