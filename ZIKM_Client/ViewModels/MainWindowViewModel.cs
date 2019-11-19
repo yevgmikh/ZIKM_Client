@@ -4,6 +4,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using ZIKM_Client.Infrastructure;
 using ZIKM_Client.Interfaces;
@@ -13,6 +14,7 @@ namespace ZIKM_Client.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private Dictionary<string, string> nameType;
         private List<string> nameList;
         private string seletedName;
 
@@ -30,23 +32,54 @@ namespace ZIKM_Client.ViewModels
             Provider = provider;
             OnClickCommand = ReactiveCommand.Create(() => { /* do something */ });
             //new LoginWindow().ShowDialog(Application.Current.MainWindow);
-            Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetFolders, ""));
+            Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
             ResponseData? response = Provider?.GetResponse();
-            NameList = new List<string>(response?.Message.Split(';'));
+            SetList(response?.Message);
         }
 
         public ReactiveCommand OnClickCommand { get; }
 
-        public void Open()
+        private void SetList(string data)
         {
-            Provider?.SendRequest(new RequestData(Session, (int)MainOperation.OpenFolder, SeletedName));
-            ResponseData? response = Provider?.GetResponse();
-            if (response?.Code == 0)
+            nameType = new Dictionary<string, string>();
+            foreach (var obj in data.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                nameType.Add(obj.Split(':')[1], obj.Split(':')[0]);
+            NameList = new List<string>(nameType.Keys);
+        }
+
+        public async void Open()
+        {
+            if (seletedName != null)
             {
-                Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetFiles, ""));
-                response = Provider?.GetResponse();
-                NameList = new List<string>(response?.Message.Split(';'));
+                ResponseData? response;
+                switch (nameType[seletedName])
+                {
+                    case "file":
+                        Provider?.SendRequest(new RequestData(Session, (int)MainOperation.OpenFile, SeletedName));
+                        response = Provider?.GetResponse();
+                        if (response?.Code == 0)
+                        {
+                            var window = new FileWindow()
+                            {
+                                DataContext = new FileViewModel(Session, Provider)
+                            };
+                            await window.ShowDialog(Application.Current.Windows.Where(i => i.GetType().Name == "MainWindow").FirstOrDefault());
+                        }
+                        break;
+                    case "folder":
+                        Provider?.SendRequest(new RequestData(Session, (int)MainOperation.OpenFolder, SeletedName));
+                        response = Provider?.GetResponse();
+                        if (response?.Code == 0)
+                        {
+                            Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
+                            response = Provider?.GetResponse();
+                            SetList(response?.Message);
+                        }
+                        break;
+                }
             }
+            
+            
         }
 
         public void Close()
@@ -55,18 +88,18 @@ namespace ZIKM_Client.ViewModels
             ResponseData? response = Provider?.GetResponse();
             if (response?.Code == 0)
             {
-                Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetFolders, ""));
+                Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
                 response = Provider?.GetResponse();
-                NameList = new List<string>(response?.Message.Split(';'));
+                SetList(response?.Message);
             }
         }
 
         public void LogOut()
         {
-            Provider.SendRequest(new RequestData(Session, 6, ""));
+            Provider.SendRequest(new RequestData(Session, (int)MainOperation.EndSession, ""));
             var response = Provider.GetResponse();
-            Provider?.Dispose();
-            Application.Current.MainWindow.Close();
+            //Provider?.Dispose();
+            Application.Current.Windows.Where(i => i.GetType().Name == "MainWindow").FirstOrDefault().Close();
         }
     }
 }

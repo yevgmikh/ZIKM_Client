@@ -37,7 +37,7 @@ namespace ZIKM_Client.ViewModels
             Captcha = Provider.GetCaptcha();
         }
 
-        public void LogIn()
+        public async void LogIn()
         {
             try
             {
@@ -53,19 +53,24 @@ namespace ZIKM_Client.ViewModels
                     //((MainWindowViewModel)Application.Current.MainWindow.DataContext).Session = response.SessionId;
                     //((MainWindowViewModel)Application.Current.MainWindow.DataContext).Provider = Provider;
                     //Application.Current.Windows.Where(i => i.GetType().Name == "LoginWindow").FirstOrDefault().Close();
-                    window.ShowDialog(Application.Current.Windows.Where(i => i.GetType().Name == "LoginWindow").FirstOrDefault());
+                    await window.ShowDialog(Application.Current.Windows.Where(i => i.GetType().Name == "LoginWindow").FirstOrDefault());
                 }
                 else
                 {
                     Login = response.Message;
-                    Captcha = Provider.GetCaptcha();
-
                 }
+                Captcha = Provider.GetCaptcha();
             }
             catch (Exception ex)
             {
                 Login = ex.Message;
             }
+        }
+
+        public void Exit()
+        {
+            Provider.Dispose();
+            Application.Current.Exit();
         }
     }
 }

@@ -49,9 +49,9 @@ namespace ZIKM_Client
         {
             SendData(JsonConvert.SerializeObject(login));
             ResponseData response = GetResponse();
-            if (response.Code != 0)
+            if (response.Code == -2)
             {
-                // Reconnecting because server close connection if login failed
+                // Reconnecting because server close connection if code -2
                 _stream.Close();
                 _client.Close();
                 _client = new TcpClient(_address, _port);
@@ -108,6 +108,7 @@ namespace ZIKM_Client
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
+                SendData("Close");
                 _stream.Close();
                 _client.Close();
 
