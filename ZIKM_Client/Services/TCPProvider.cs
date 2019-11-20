@@ -7,7 +7,7 @@ using System.Text;
 using ZIKM_Client.Infrastructure;
 using ZIKM_Client.Interfaces;
 
-namespace ZIKM_Client
+namespace ZIKM_Client.Sevices
 {
     public class TCPProvider : IProvider
     {
@@ -108,9 +108,10 @@ namespace ZIKM_Client
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
-                SendData("Close");
-                _stream.Close();
-                _client.Close();
+                if (_client != null && _stream != null)
+                    SendData("Close");
+                _stream?.Close();
+                _client?.Close();
 
                 disposedValue = true;
             }

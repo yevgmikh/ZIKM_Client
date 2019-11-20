@@ -24,10 +24,7 @@ namespace ZIKM_Client
         // container, etc.
         private static void AppMain(Application app, string[] args)
         {
-            var window = new LoginWindow
-            {
-                DataContext = new LoginViewModel(),
-            };
+            var window = new LoginWindow();
 
             app.Run(window);
         }

@@ -1,14 +1,13 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
+using MessageBox.Avalonia;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reactive;
 using ZIKM_Client.Interfaces;
+using ZIKM_Client.Services;
+using ZIKM_Client.Sevices;
 using ZIKM_Client.Views;
 
 namespace ZIKM_Client.ViewModels
@@ -21,6 +20,7 @@ namespace ZIKM_Client.ViewModels
         private string password = "hmmm";
         private string code;
         private IBitmap captcha;
+        private IProvider provider;
 
         public string IpAddress { get => ipAddress; set => this.RaiseAndSetIfChanged(ref ipAddress, value); }
         public string Port { get => port; set => this.RaiseAndSetIfChanged(ref port, value); }
@@ -28,48 +28,56 @@ namespace ZIKM_Client.ViewModels
         public string Password { get => password; set => this.RaiseAndSetIfChanged(ref password, value); }
         public string Code { get => code; set => this.RaiseAndSetIfChanged(ref code, value); }
         public IBitmap Captcha { get => captcha; set => this.RaiseAndSetIfChanged(ref captcha, value); }
+        public IProvider Provider { get => provider; private set => this.RaiseAndSetIfChanged(ref provider, value); }
 
-        public IProvider Provider { get; private set; }
+        public ReactiveCommand<Unit, Unit> ConnectCommand { get; }
+        public ReactiveCommand<Unit, Unit> LoginCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExitCommand { get; }
 
         public LoginViewModel()
         {
-            Provider = new TCPProvider(IpAddress, int.Parse(Port));
-            Captcha = Provider.GetCaptcha();
+            ConnectCommand = ReactiveCommand.Create(Connect);
+            LoginCommand = ReactiveCommand.Create(LogIn);
+            ExitCommand = ReactiveCommand.Create(Exit);
         }
 
-        public async void LogIn()
+        private async void Connect()
+        {
+            try
+            {
+                Provider = new TCPProvider(IpAddress, int.Parse(Port));
+                Captcha = Provider.GetCaptcha();
+            }
+            catch (Exception ex)
+            {
+                await new MessageBoxWindow("Login", ex.Message).Show();
+            }
+        }
+
+        private async void LogIn()
         {
             try
             {
                 var response = Provider.SendLoginRequest(new Infrastructure.LoginData(Login, Password, Code));
+                await new MessageBoxWindow("Login", response.Message).Show();
                 if (response.Code == 0)
                 {
-                    //Provider.SendRequest(new Infrastructure.RequestData(response.SessionId, 6, ""));
-                    //response = Provider.GetResponse();
-                    MainWindow window = new MainWindow()
-                    {
-                        DataContext = new MainWindowViewModel(response.SessionId, Provider)
-                    };
-                    //((MainWindowViewModel)Application.Current.MainWindow.DataContext).Session = response.SessionId;
-                    //((MainWindowViewModel)Application.Current.MainWindow.DataContext).Provider = Provider;
-                    //Application.Current.Windows.Where(i => i.GetType().Name == "LoginWindow").FirstOrDefault().Close();
+                    SessionData.SessionId = response.SessionId;
+                    SessionData.Provider = Provider;
+                    MainWindow window = new MainWindow();
                     await window.ShowDialog(Application.Current.Windows.Where(i => i.GetType().Name == "LoginWindow").FirstOrDefault());
-                }
-                else
-                {
-                    Login = response.Message;
                 }
                 Captcha = Provider.GetCaptcha();
             }
             catch (Exception ex)
             {
-                Login = ex.Message;
+                await new MessageBoxWindow("Login", ex.Message).Show();
             }
         }
 
-        public void Exit()
+        private void Exit()
         {
-            Provider.Dispose();
+            Provider?.Dispose();
             Application.Current.Exit();
         }
     }

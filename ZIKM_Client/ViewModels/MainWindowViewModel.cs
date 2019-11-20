@@ -1,13 +1,12 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
+using MessageBox.Avalonia;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using ZIKM_Client.Infrastructure;
 using ZIKM_Client.Interfaces;
+using ZIKM_Client.Services;
 using ZIKM_Client.Views;
 
 namespace ZIKM_Client.ViewModels
@@ -24,20 +23,23 @@ namespace ZIKM_Client.ViewModels
         public Guid Session { get; private set; }
         public IProvider Provider { get; private set; }
 
-        //public MainWindowViewModel() { }
+        public ReactiveCommand OpenCommand { get; }
+        public ReactiveCommand CloseCommand { get; }
+        public ReactiveCommand LogOutCommand { get; }
 
-        public MainWindowViewModel(Guid session, IProvider provider)
+        public MainWindowViewModel()
         {
-            Session = session;
-            Provider = provider;
-            OnClickCommand = ReactiveCommand.Create(() => { /* do something */ });
-            //new LoginWindow().ShowDialog(Application.Current.MainWindow);
-            Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
-            ResponseData? response = Provider?.GetResponse();
-            SetList(response?.Message);
-        }
+            Session = SessionData.SessionId;
+            Provider = SessionData.Provider;
+            OpenCommand = ReactiveCommand.Create(Open);
+            CloseCommand = ReactiveCommand.Create(Close);
+            LogOutCommand = ReactiveCommand.Create(LogOut);
 
-        public ReactiveCommand OnClickCommand { get; }
+            // Get data from root folder
+            Provider.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
+            ResponseData response = Provider.GetResponse();
+            SetList(response.Message);
+        }
 
         private void SetList(string data)
         {
@@ -47,58 +49,59 @@ namespace ZIKM_Client.ViewModels
             NameList = new List<string>(nameType.Keys);
         }
 
-        public async void Open()
+        private async void Open()
         {
             if (seletedName != null)
             {
-                ResponseData? response;
+                ResponseData response;
                 switch (nameType[seletedName])
                 {
                     case "file":
-                        Provider?.SendRequest(new RequestData(Session, (int)MainOperation.OpenFile, SeletedName));
-                        response = Provider?.GetResponse();
-                        if (response?.Code == 0)
+                        Provider.SendRequest(new RequestData(Session, (int)MainOperation.OpenFile, SeletedName));
+                        response = Provider.GetResponse();
+                        if (response.Code == 0)
                         {
-                            var window = new FileWindow()
-                            {
-                                DataContext = new FileViewModel(Session, Provider)
-                            };
+                            var window = new FileWindow();
                             await window.ShowDialog(Application.Current.Windows.Where(i => i.GetType().Name == "MainWindow").FirstOrDefault());
                         }
+                        else
+                            await new MessageBoxWindow("Main", response.Message).Show();
                         break;
                     case "folder":
-                        Provider?.SendRequest(new RequestData(Session, (int)MainOperation.OpenFolder, SeletedName));
-                        response = Provider?.GetResponse();
-                        if (response?.Code == 0)
+                        Provider.SendRequest(new RequestData(Session, (int)MainOperation.OpenFolder, SeletedName));
+                        response = Provider.GetResponse();
+                        if (response.Code == 0)
                         {
                             Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
-                            response = Provider?.GetResponse();
-                            SetList(response?.Message);
+                            response = Provider.GetResponse();
+                            SetList(response.Message);
                         }
+                        else
+                            await new MessageBoxWindow("Main", response.Message).Show();
                         break;
                 }
             }
-            
-            
         }
 
-        public void Close()
+        private void Close()
         {
-            Provider?.SendRequest(new RequestData(Session, (int)MainOperation.CloseFolder, ""));
-            ResponseData? response = Provider?.GetResponse();
-            if (response?.Code == 0)
+            Provider.SendRequest(new RequestData(Session, (int)MainOperation.CloseFolder, ""));
+            ResponseData response = Provider.GetResponse();
+            if (response.Code == 0)
             {
-                Provider?.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
-                response = Provider?.GetResponse();
-                SetList(response?.Message);
+                Provider.SendRequest(new RequestData(Session, (int)MainOperation.GetAll, ""));
+                response = Provider.GetResponse();
+                SetList(response.Message);
             }
+            else
+                new MessageBoxWindow("Main", response.Message).Show();
         }
 
-        public void LogOut()
+        private void LogOut()
         {
             Provider.SendRequest(new RequestData(Session, (int)MainOperation.EndSession, ""));
             var response = Provider.GetResponse();
-            //Provider?.Dispose();
+            new MessageBoxWindow("Main", response.Message).Show();
             Application.Current.Windows.Where(i => i.GetType().Name == "MainWindow").FirstOrDefault().Close();
         }
     }

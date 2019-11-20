@@ -1,11 +1,11 @@
 ﻿using Avalonia;
+using MessageBox.Avalonia;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using ZIKM_Client.Infrastructure;
 using ZIKM_Client.Interfaces;
+using ZIKM_Client.Services;
 
 namespace ZIKM_Client.ViewModels
 {
@@ -32,41 +32,74 @@ namespace ZIKM_Client.ViewModels
         public Guid Session { get; private set; }
         public IProvider Provider { get; private set; }
 
-        public FileViewModel(Guid session, IProvider provider)
+        public ReactiveCommand ReadCommand { get; }
+        public ReactiveCommand WriteCommand { get; }
+        public ReactiveCommand EditCommand { get; }
+        public ReactiveCommand CloseCommand { get; }
+
+        public FileViewModel()
         {
-            Session = session;
-            Provider = provider;
+            Session = SessionData.SessionId;
+            Provider = SessionData.Provider;
             EditMode = false;
+            ReadCommand = ReactiveCommand.Create(Read);
+            WriteCommand = ReactiveCommand.Create(Write);
+            EditCommand = ReactiveCommand.Create(Edit);
+            CloseCommand = ReactiveCommand.Create(Close);
         }
 
-        public void Read()
+        private void Read()
         {
             Provider.SendRequest(new RequestData(Session, (int)FileOperation.Read, ""));
-            Text = Provider.GetResponse().Message;
+            var response = Provider.GetResponse();
+            if (response.Code == 0)
+            {
+                Text = response.Message;
+            }
+            else
+                new MessageBoxWindow("File", response.Message).Show();
         }
 
-        public void Write()
+        private void Write()
         {
             Provider.SendRequest(new RequestData(Session, (int)FileOperation.Write, Text));
-            Text = Provider.GetResponse().Message;
+            Text = "";
+            new MessageBoxWindow("File", Provider.GetResponse().Message).Show();
         }
 
-        public void Edit()
+        private void Edit()
         {
             Provider.SendRequest(new RequestData(Session, (int)FileOperation.Edit, EditMode ? Text : ""));
-            Text = Provider.GetResponse().Message;
-            EditMode = !EditMode;
-
+            if (editMode)
+            {
+                Text = "";
+                new MessageBoxWindow("File", Provider.GetResponse().Message).Show();
+                EditMode = !EditMode;
+            }
+            else
+            {
+                var response = Provider.GetResponse();
+                if (response.Code == 0)
+                {
+                    Text = response.Message;
+                    EditMode = !EditMode;
+                }
+                else
+                    new MessageBoxWindow("File", response.Message).Show();
+            }
         }
 
-        public void Close()
+        private void Close()
         {
             Provider.SendRequest(new RequestData(Session, (int)FileOperation.Exit, null));
-            Text = Provider.GetResponse().Message;
+            Provider.GetResponse();
             if (!EditMode)
                 Application.Current.Windows.Where(i => i.GetType().Name == "FileWindow").FirstOrDefault().Close();
             else
+            {
+                Text = "";
                 EditMode = !EditMode;
+            }
         }
     }
 }
