@@ -77,10 +77,15 @@
              Text="{Binding Password}"
              IsEnabled="{Binding Provider, Converter={StaticResource nullToBoolConverter}, Mode=OneWay}" />
 
-    <Image Grid.Row="5"
-           Grid.Column="0"
-           Source="{Binding Captcha}"
-           Margin="5 3 5 3"/>
+    <Grid Grid.Row="5"
+          Grid.Column="0"
+          Margin="15 5 15 5">
+      <Border CornerRadius="10">
+        <Border.Background>
+          <ImageBrush Stretch="Fill" Source="{Binding Captcha}"/>
+        </Border.Background>
+      </Border>
+    </Grid>
     <TextBox Grid.Row="5"
              Grid.Column="1"
              Text="{Binding Code}"

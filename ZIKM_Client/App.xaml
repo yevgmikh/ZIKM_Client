@@ -27,12 +27,15 @@
                       BorderBrush="{TemplateBinding BorderBrush}">
                 <ScrollViewer Margin="{TemplateBinding Margin}"
                               Focusable="False"
-                              VerticalScrollBarVisibility="Hidden">
+                              VerticalScrollBarVisibility="Hidden"
+                              HorizontalScrollBarVisibility="Auto">
                   <TextPresenter Name="PART_TextPresenter"
                                  TextWrapping="{TemplateBinding TextWrapping}"
                                  Text="{TemplateBinding Text}" 
                                  PasswordChar="{TemplateBinding PasswordChar}" 
-                                 CaretIndex="{TemplateBinding CaretIndex}"/>
+                                 CaretIndex="{TemplateBinding CaretIndex}"
+                                 SelectionStart="{TemplateBinding SelectionStart}"
+                                 SelectionEnd="{TemplateBinding SelectionEnd}"/>
                 </ScrollViewer>
               </Border>
             </ControlTemplate>

@@ -28,7 +28,7 @@
              TextWrapping="Wrap"
              VerticalAlignment="Top"
              Margin="10"
-             Height="330"/>
+             MinHeight="180"/>
     <Grid Grid.Column="1">
       <Grid.RowDefinitions>
         <RowDefinition MinHeight="50"
