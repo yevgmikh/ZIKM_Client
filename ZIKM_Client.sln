@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZIKM_Client", "ZIKM_Client\ZIKM_Client.csproj", "{9EBE83CD-DA1C-4010-A1E6-E83EC5B3C47A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZIKM.Client", "ZIKM.Client\ZIKM.Client.csproj", "{38F7BB84-5950-44D6-9914-4CC0CD137642}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZIKM.Infrastructure", "ZIKM.Infrastructure\ZIKM.Infrastructure.csproj", "{402B91EE-8D7A-492A-8AAB-E4B6F527BDF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9EBE83CD-DA1C-4010-A1E6-E83EC5B3C47A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9EBE83CD-DA1C-4010-A1E6-E83EC5B3C47A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9EBE83CD-DA1C-4010-A1E6-E83EC5B3C47A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9EBE83CD-DA1C-4010-A1E6-E83EC5B3C47A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F7BB84-5950-44D6-9914-4CC0CD137642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F7BB84-5950-44D6-9914-4CC0CD137642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F7BB84-5950-44D6-9914-4CC0CD137642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F7BB84-5950-44D6-9914-4CC0CD137642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{402B91EE-8D7A-492A-8AAB-E4B6F527BDF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{402B91EE-8D7A-492A-8AAB-E4B6F527BDF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{402B91EE-8D7A-492A-8AAB-E4B6F527BDF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{402B91EE-8D7A-492A-8AAB-E4B6F527BDF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

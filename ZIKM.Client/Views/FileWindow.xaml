@@ -1,0 +1,62 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ZIKM.Client.ViewModels;assembly=ZIKM.Client"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="400" Height="350"
+        x:Class="ZIKM.Client.Views.FileWindow"
+        Icon="avares://ZIKM.Client/Assets/avalonia-logo.ico"
+        Title="File Window">
+
+  <Window.DataContext>
+    <vm:FileWindowViewModel/>
+  </Window.DataContext>
+
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="Margin" Value="10 5 15 5" />
+    </Style>
+  </Window.Styles>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="2*" />
+      <ColumnDefinition MaxWidth="250"
+                        MinWidth="150"/>
+    </Grid.ColumnDefinitions>
+    <TextBox Text="{Binding Text}"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             VerticalAlignment="Top"
+             Margin="10"
+             MinHeight="180"/>
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition MinHeight="50"
+                       MaxHeight="70"/>
+        <RowDefinition MinHeight="50"
+                       MaxHeight="70"/>
+        <RowDefinition MinHeight="50"
+                       MaxHeight="70"/>
+        <RowDefinition MinHeight="50"
+                       MaxHeight="70"/>
+        <RowDefinition Height="3*" />
+      </Grid.RowDefinitions>
+      <Button Grid.Row="0"
+              Command="{Binding Read}"
+              IsEnabled="{Binding !EditMode}"
+              Content="Read"/>
+      <Button Grid.Row="1"
+              Command="{Binding Write}"
+              IsEnabled="{Binding !EditMode}"
+              Content="Write"/>
+      <Button Grid.Row="2"
+              Command="{Binding Edit}"
+              Content="Edit"/>
+      <Button Grid.Row="3"
+              Command="{Binding Close}"
+              Content="{Binding ExitButton}"/>
+    </Grid>
+  </Grid>
+  
+</Window>

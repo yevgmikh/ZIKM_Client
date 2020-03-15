@@ -1,0 +1,106 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ZIKM.Client.ViewModels;assembly=ZIKM.Client"
+        xmlns:services="clr-namespace:ZIKM.Client.Services;assembly=ZIKM.Client"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="300" Height="300"
+        x:Class="ZIKM.Client.Views.LoginWindow"
+        Icon="avares://ZIKM.Client/Assets/avalonia-logo.ico"
+        CanResize="False"
+        Title="Login">
+
+    <Window.DataContext>
+      <vm:LoginWindowViewModel/>
+    </Window.DataContext>
+    
+    <Window.Resources>
+        <services:NullToBoolConverter x:Key="nullToBoolConverter"/>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="TextBox">
+            <Setter Property="Margin" Value="10 5 11 5" />
+        </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="Margin" Value="15 0 11 0" />
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.5*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Text="IP address:" />
+
+        <TextBox Grid.Row="0"
+                 Grid.Column="1"
+                 Text="{Binding IpAddress}" />
+
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   Text="Port:" />
+        <TextBox Grid.Row="1"
+                 Grid.Column="1"
+                 Text="{Binding Port}" />
+
+        <Button Grid.Row="2"
+                Grid.Column="1"
+                Content="Connect"
+                Command="{Binding ConnectCommand}"/>
+
+        <TextBlock Grid.Row="3"
+                   Grid.Column="0"
+                   Text="Login:" />
+        <TextBox Grid.Row="3"
+                 Grid.Column="1"
+                 Text="{Binding Login}"
+                 IsEnabled="{Binding Provider, Converter={StaticResource nullToBoolConverter}, Mode=OneWay}"/>
+
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
+                   Text="Password:" />
+        <TextBox Grid.Row="4"
+                 Grid.Column="1"
+                 PasswordChar="×"
+                 Text="{Binding Password}"
+                 IsEnabled="{Binding Provider, Converter={StaticResource nullToBoolConverter}, Mode=OneWay}" />
+
+        <Grid Grid.Row="5"
+              Grid.Column="0"
+              Margin="15 5 15 5">
+          <Border CornerRadius="10">
+              <Border.Background>
+                  <ImageBrush Stretch="Fill" Source="{Binding Captcha}"/>
+              </Border.Background>
+          </Border>
+        </Grid>
+        <TextBox Grid.Row="5"
+                 Grid.Column="1"
+                 Text="{Binding Code}"
+                 IsEnabled="{Binding Provider, Converter={StaticResource nullToBoolConverter}, Mode=OneWay}" />
+
+        <Button Grid.Row="6"
+                Grid.Column="0"
+                Content="Exit"
+                Command="{Binding ExitCommand}"/>
+        <Button Grid.Row="6"
+                Grid.Column="1"
+                Content="Log in"
+                Command="{Binding LoginCommand}"
+                IsEnabled="{Binding Provider, Converter={StaticResource nullToBoolConverter}, Mode=OneWay}"/>
+    </Grid>
+  
+</Window>
